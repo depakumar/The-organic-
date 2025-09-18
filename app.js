@@ -1,3 +1,7 @@
+// Import Firebase v9 modules
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
 // ✅ Aapka Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyBKK0SeO0n3o2QqG8xGgV0u64XIFSqWAi0",
@@ -9,21 +13,21 @@ const firebaseConfig = {
   measurementId: "G-WBRYC0GBYK"
 };
 
-// ✅ Firebase initialize
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+// ✅ Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-// ✅ Order form submit
+// ✅ Form submit handler
 document.getElementById("orderForm").addEventListener("submit", async (e) => {
   e.preventDefault();
-  
+
   const name = document.getElementById("name").value;
   const phone = document.getElementById("phone").value;
   const address = document.getElementById("address").value;
   const items = document.getElementById("items").value;
 
   try {
-    await db.collection("orders").add({
+    await addDoc(collection(db, "orders"), {
       name,
       phone,
       address,
@@ -40,7 +44,7 @@ document.getElementById("orderForm").addEventListener("submit", async (e) => {
   }
 });
 
-// ✅ Register Service Worker for PWA
+// ✅ Service Worker register
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js")
     .then(() => console.log("Service Worker Registered ✅"))
