@@ -11,6 +11,17 @@
     th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
     th { background: #4caf50; color: white; }
     tr:nth-child(even) { background: #f2f2f2; }
+    button {
+      padding: 6px 10px;
+      background: #e53935;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #c62828;
+    }
   </style>
 </head>
 <body>
@@ -23,6 +34,7 @@
         <th>Address</th>
         <th>Items</th>
         <th>Time</th>
+        <th>Action</th>
       </tr>
     </thead>
     <tbody id="ordersTable"></tbody>
@@ -30,7 +42,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, orderBy, query, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     // Firebase Config
     const firebaseConfig = {
@@ -53,8 +65,8 @@
 
     onSnapshot(q, (snapshot) => {
       tableBody.innerHTML = "";
-      snapshot.forEach((doc) => {
-        const order = doc.data();
+      snapshot.forEach((docSnap) => {
+        const order = docSnap.data();
         const row = `
           <tr>
             <td>${order.name}</td>
@@ -62,11 +74,25 @@
             <td>${order.address}</td>
             <td>${order.items}</td>
             <td>${order.createdAt?.toDate().toLocaleString() || ""}</td>
+            <td><button onclick="deleteOrder('${docSnap.id}')">Delete</button></td>
           </tr>
         `;
         tableBody.innerHTML += row;
       });
     });
+
+    // Delete order function
+    window.deleteOrder = async (id) => {
+      if (confirm("⚠️ Are you sure you want to delete this order?")) {
+        try {
+          await deleteDoc(doc(db, "Orders", id));
+          alert("✅ Order deleted!");
+        } catch (error) {
+          console.error("Error deleting order:", error);
+          alert("❌ Error deleting order, check console");
+        }
+      }
+    };
   </script>
 </body>
 </html>
