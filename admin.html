@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Orders</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f4f6f9; }
+    h1 { color: #2e7d32; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; }
+    th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+    th { background: #4caf50; color: white; }
+    tr:nth-child(even) { background: #f2f2f2; }
+  </style>
+</head>
+<body>
+  <h1>📦 Orders - Admin Panel</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Address</th>
+        <th>Items</th>
+        <th>Time</th>
+      </tr>
+    </thead>
+    <tbody id="ordersTable"></tbody>
+  </table>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, orderBy, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBKK0SeO0n3o2QqG8xGgV0u64XIFSqWAi0",
+      authDomain: "the-organics-a71b8.firebaseapp.com",
+      projectId: "the-organics-a71b8",
+      storageBucket: "the-organics-a71b8.appspot.com",
+      messagingSenderId: "627819861097",
+      appId: "1:627819861097:web:69f791201c5b13bce43ef8",
+      measurementId: "G-WBRYC0GBYK"
+    };
+
+    // Init
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Realtime listener
+    const q = query(collection(db, "Orders"), orderBy("createdAt", "desc"));
+    const tableBody = document.getElementById("ordersTable");
+
+    onSnapshot(q, (snapshot) => {
+      tableBody.innerHTML = "";
+      snapshot.forEach((doc) => {
+        const order = doc.data();
+        const row = `
+          <tr>
+            <td>${order.name}</td>
+            <td>${order.phone}</td>
+            <td>${order.address}</td>
+            <td>${order.items}</td>
+            <td>${order.createdAt?.toDate().toLocaleString() || ""}</td>
+          </tr>
+        `;
+        tableBody.innerHTML += row;
+      });
+    });
+  </script>
+</body>
+</html>
