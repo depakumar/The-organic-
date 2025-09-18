@@ -11,16 +11,25 @@
     th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
     th { background: #4caf50; color: white; }
     tr:nth-child(even) { background: #f2f2f2; }
-    button {
+    .btn {
       padding: 6px 10px;
-      background: #e53935;
-      color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      font-size: 14px;
     }
-    button:hover {
-      background: #c62828;
+    .deliver-btn {
+      background: #1976d2;
+      color: white;
+    }
+    .deliver-btn:hover { background: #1565c0; }
+    .delivered {
+      color: green;
+      font-weight: bold;
+    }
+    .pending {
+      color: red;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -34,6 +43,7 @@
         <th>Address</th>
         <th>Items</th>
         <th>Time</th>
+        <th>Status</th>
         <th>Action</th>
       </tr>
     </thead>
@@ -42,7 +52,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, onSnapshot, orderBy, query, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, orderBy, query, updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     // Firebase Config
     const firebaseConfig = {
@@ -67,6 +77,14 @@
       tableBody.innerHTML = "";
       snapshot.forEach((docSnap) => {
         const order = docSnap.data();
+        const statusText = order.status === "Delivered" ? 
+          `<span class="delivered">Delivered</span>` : 
+          `<span class="pending">Pending</span>`;
+
+        const actionBtn = order.status === "Delivered"
+          ? "✔️ Done"
+          : `<button class="btn deliver-btn" onclick="markDelivered('${docSnap.id}')">Mark as Delivered</button>`;
+
         const row = `
           <tr>
             <td>${order.name}</td>
@@ -74,23 +92,23 @@
             <td>${order.address}</td>
             <td>${order.items}</td>
             <td>${order.createdAt?.toDate().toLocaleString() || ""}</td>
-            <td><button onclick="deleteOrder('${docSnap.id}')">Delete</button></td>
+            <td>${statusText}</td>
+            <td>${actionBtn}</td>
           </tr>
         `;
         tableBody.innerHTML += row;
       });
     });
 
-    // Delete order function
-    window.deleteOrder = async (id) => {
-      if (confirm("⚠️ Are you sure you want to delete this order?")) {
-        try {
-          await deleteDoc(doc(db, "Orders", id));
-          alert("✅ Order deleted!");
-        } catch (error) {
-          console.error("Error deleting order:", error);
-          alert("❌ Error deleting order, check console");
-        }
+    // Mark as delivered function
+    window.markDelivered = async (id) => {
+      try {
+        const orderRef = doc(db, "Orders", id);
+        await updateDoc(orderRef, { status: "Delivered" });
+        alert("✅ Order marked as Delivered!");
+      } catch (error) {
+        console.error("Error updating status:", error);
+        alert("❌ Error updating order, check console");
       }
     };
   </script>
