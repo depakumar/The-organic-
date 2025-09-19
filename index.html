@@ -4,33 +4,60 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Organic Delivery Indore</title>
-
-  <!-- Styles -->
   <link rel="stylesheet" href="style.css"/>
-
-  <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
-
-  <!-- Theme Color for Browser/Status Bar -->
   <meta name="theme-color" content="#228B22">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
+  <!-- Header -->
   <header>
-    <h1>🌿 Organic Vegetables Delivery</h1>
-    <p>Fresh • Organic • Indore</p>
-
-    <!-- Cart Button -->
-    <button id="cartBtn">🛒 Cart (<span id="cartCount">0</span>)</button>
-
-    <!-- Install App Button (hidden by default) -->
-    <button id="installBtn" style="display:none;">📲 Install App</button>
+    <h1>🌿 Organic Delivery Indore</h1>
+    <nav>
+      <a href="#products">Products</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="header-buttons">
+      <button id="cartBtn">🛒 Cart (<span id="cartCount">0</span>)</button>
+      <button id="installBtn" style="display:none;">📲 Install App</button>
+    </div>
   </header>
 
+  <!-- Hero Section -->
+  <section id="hero" class="hero-section">
+    <div class="hero-overlay">
+      <h2>Eat Fresh • Eat Organic</h2>
+      <p>Farm fresh vegetables & fruits delivered at your doorstep in Indore</p>
+      <button onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">
+        Shop Now
+      </button>
+    </div>
+  </section>
+
+  <!-- Products Section -->
   <main>
-    <!-- Products will be inserted dynamically from JS -->
     <section id="products">
       <h2>Our Organic Products</h2>
       <div id="productList" class="grid"></div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+      <h2>About Us</h2>
+      <p>
+        We deliver fresh, organic, and locally-sourced vegetables and fruits right to your home. 
+        Our mission is to support sustainable farming and provide healthy food to Indore families.
+      </p>
+    </section>
+
+    <!-- Contact / Footer -->
+    <section id="contact" class="footer">
+      <h2>Contact Us</h2>
+      <p>📍 Indore, Madhya Pradesh</p>
+      <p>📞 +91 98765 43210</p>
+      <p>📧 support@organicindore.com</p>
+      <p>© 2025 Organic Delivery Indore</p>
     </section>
   </main>
 
@@ -60,34 +87,31 @@
     </div>
   </div>
 
-  <!-- App Logic -->
+  <!-- Scripts -->
   <script type="module" src="app.js"></script>
-
-  <!-- PWA Service Worker Register -->
   <script>
+    // Service Worker Register
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("/service-worker.js")
         .then(() => console.log("✅ Service Worker Registered"))
-        .catch(err => console.log("❌ SW Registration Failed:", err));
+        .catch(err => console.log("❌ SW Failed:", err));
     }
 
-    // Install App Button Logic
+    // Install App Button
     let deferredPrompt;
     const installBtn = document.getElementById("installBtn");
-
     window.addEventListener("beforeinstallprompt", (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      installBtn.style.display = "inline-block"; // Show button
+      installBtn.style.display = "inline-block";
     });
-
     installBtn.addEventListener("click", async () => {
       if (deferredPrompt) {
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
         console.log("User choice:", outcome);
         deferredPrompt = null;
-        installBtn.style.display = "none"; // Hide after install
+        installBtn.style.display = "none";
       }
     });
   </script>
