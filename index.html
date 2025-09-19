@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-  <!-- Header -->
+  <!-- Header / Navbar -->
   <header>
     <h1>🌿 Organic Delivery Indore</h1>
     <nav>
@@ -29,9 +29,19 @@
     <div class="hero-overlay">
       <h2>Eat Fresh • Eat Organic</h2>
       <p>Farm fresh vegetables & fruits delivered at your doorstep in Indore</p>
-      <button onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">
-        Shop Now
-      </button>
+      <button onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">Shop Now</button>
+    </div>
+  </section>
+
+  <!-- Categories / Featured -->
+  <section id="categories">
+    <h2>Shop by Category</h2>
+    <div class="category-buttons">
+      <button onclick="filterCategory('New Arrivals')">New Arrivals</button>
+      <button onclick="filterCategory('Exotic')">Exotic</button>
+      <button onclick="filterCategory('Leafy')">Leafy</button>
+      <button onclick="filterCategory('Fruits')">Fruits</button>
+      <button onclick="filterCategory('All')">All Products</button>
     </div>
   </section>
 
@@ -90,7 +100,7 @@
   <!-- Scripts -->
   <script type="module" src="app.js"></script>
   <script>
-    // Service Worker Register
+    // Service Worker
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("/service-worker.js")
         .then(() => console.log("✅ Service Worker Registered"))
@@ -114,6 +124,12 @@
         installBtn.style.display = "none";
       }
     });
+
+    // Category Filter
+    window.filterCategory = function(category) {
+      const event = new CustomEvent('filterProducts', { detail: category });
+      window.dispatchEvent(event);
+    }
   </script>
 </body>
 </html>
