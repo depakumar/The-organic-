@@ -1,3 +1,4 @@
+/* ===== General ===== */
 body {
   font-family: 'Poppins', sans-serif;
   margin: 0;
@@ -5,6 +6,11 @@ body {
   color: #333;
 }
 
+h1, h2, h3 {
+  margin: 0;
+}
+
+/* ===== Header / Navbar ===== */
 header {
   background: #228B22;
   color: white;
@@ -18,7 +24,6 @@ header {
 }
 
 header h1 {
-  margin: 0;
   font-size: 1.5rem;
 }
 
@@ -49,6 +54,7 @@ header nav a:hover {
   background: #e8f5e9;
 }
 
+/* ===== Hero Section ===== */
 .hero-section {
   position: relative;
   height: 60vh;
@@ -85,15 +91,35 @@ header nav a:hover {
   background: #e8f5e9;
 }
 
-#products {
+/* ===== Categories ===== */
+#categories {
   padding: 2rem;
   text-align: center;
 }
 
+.category-buttons button {
+  margin: 0.3rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  border: 1px solid #228B22;
+  background: white;
+  color: #228B22;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.category-buttons button:hover {
+  background: #228B22;
+  color: white;
+}
+
+/* ===== Products Grid ===== */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1.5rem;
+  padding: 1rem;
 }
 
 .product-card {
@@ -102,6 +128,9 @@ header nav a:hover {
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   overflow: hidden;
   transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .product-card:hover {
@@ -117,6 +146,7 @@ header nav a:hover {
 
 .product-card h3 {
   margin: 0.5rem;
+  font-size: 1.1rem;
 }
 
 .product-card p {
@@ -125,6 +155,23 @@ header nav a:hover {
   font-weight: bold;
 }
 
+.product-card button {
+  margin: 0.5rem;
+  padding: 0.6rem;
+  background: #228B22;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+.product-card button:hover {
+  background: #1e7b1e;
+}
+
+/* ===== Footer ===== */
 .footer {
   background: #228B22;
   color: white;
@@ -132,6 +179,7 @@ header nav a:hover {
   text-align: center;
 }
 
+/* ===== Modals ===== */
 .modal {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -139,6 +187,7 @@ header nav a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 50;
 }
 
 .modal.hidden {
@@ -151,4 +200,8 @@ header nav a:hover {
   border-radius: 12px;
   width: 90%;
   max-width: 400px;
+}
+
+.modal-content button {
+  margin-top: 1rem;
 }
