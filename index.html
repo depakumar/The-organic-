@@ -4,8 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Organic Delivery Indore</title>
+
+  <!-- Styles -->
   <link rel="stylesheet" href="style.css"/>
-  <link rel="manifest" href="manifest.json"/>
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Theme Color for Browser/Status Bar -->
+  <meta name="theme-color" content="#228B22">
 </head>
 <body>
   <header>
@@ -48,6 +55,16 @@
     </div>
   </div>
 
+  <!-- App Logic -->
   <script type="module" src="app.js"></script>
+
+  <!-- PWA Service Worker Register -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/service-worker.js")
+        .then(() => console.log("✅ Service Worker Registered"))
+        .catch(err => console.log("❌ SW Registration Failed:", err));
+    }
+  </script>
 </body>
 </html>
