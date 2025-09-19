@@ -1,4 +1,4 @@
-// Import Firebase modular SDK
+// Import Firebase Modular SDK
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -13,7 +13,7 @@ const firebaseConfig = {
   measurementId: "G-WBRYC0GBYK"
 };
 
-// Initialize app & Firestore
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
@@ -21,18 +21,18 @@ const db = getFirestore(app);
 // PRODUCT LIST (+20% price)
 // =========================
 const products = [
-  { name: "Fresh Sweet Matar", price: 200 },
-  { name: "Sweet Potato", price: 120 },
-  { name: "Suran", price: 150 },
-  { name: "Fresh Iceberg Lettuce", price: 250 },
-  { name: "Fresh Raw Banana", price: 60 },
-  { name: "Banana Flower (Sunday Only)", price: 100 },
-  { name: "Zucchini / Red Cabbage", price: 250 },
-  { name: "Fresh Basil", price: 50 },
-  // ... (add the rest here)
+  { name: "Fresh Sweet Matar", price: 200, category: "New Arrivals", image: "images/sweet-matar.jpg" },
+  { name: "Sweet Potato", price: 120, category: "Tubers", image: "images/sweet-potato.jpg" },
+  { name: "Suran", price: 150, category: "Tubers", image: "images/suran.jpg" },
+  { name: "Fresh Iceberg Lettuce", price: 250, category: "Leafy", image: "images/iceberg.jpg" },
+  { name: "Fresh Raw Banana", price: 60, category: "Fruits", image: "images/banana.jpg" },
+  { name: "Banana Flower (Sunday Only)", price: 100, category: "New Arrivals", image: "images/banana-flower.jpg" },
+  { name: "Zucchini / Red Cabbage", price: 250, category: "Exotic", image: "images/zucchini.jpg" },
+  { name: "Fresh Basil", price: 50, category: "Exotic", image: "images/basil.jpg" },
+  // Add all other products here
 ];
 
-// Add 20% to each price
+// Add 20% to price
 products.forEach(p => p.price = Math.round(p.price * 1.2));
 
 // =========================
@@ -52,19 +52,25 @@ const checkoutForm = document.getElementById("checkoutForm");
 const msgEl = document.getElementById("msg");
 
 // Render products
-function renderProducts() {
+function renderProducts(filter = "All") {
   productListEl.innerHTML = "";
-  products.forEach((p, index) => {
+  const filtered = filter === "All" ? products : products.filter(p => p.category === filter);
+
+  filtered.forEach((p, index) => {
     const card = document.createElement("div");
     card.className = "product-card";
     card.innerHTML = `
+      <img src="${p.image}" alt="${p.name}" />
       <h3>${p.name}</h3>
-      <p>₹${p.price}/kg</p>
+      <p>₹${p.price}</p>
       <button onclick="addToCart(${index})">Add to Cart</button>
     `;
     productListEl.appendChild(card);
   });
 }
+
+// Listen to category filter
+window.addEventListener('filterProducts', (e) => renderProducts(e.detail));
 
 // Add to cart
 window.addToCart = function(index) {
@@ -88,7 +94,7 @@ function updateCart() {
     total += item.price * item.qty;
     const li = document.createElement("li");
     li.innerHTML = `
-      ${item.name} - ₹${item.price} × ${item.qty}
+      ${item.name} - ₹${item.price} × ${item.qty} 
       <button onclick="removeFromCart(${i})">❌</button>
     `;
     cartItemsEl.appendChild(li);
@@ -97,7 +103,7 @@ function updateCart() {
   cartTotalEl.textContent = total;
 }
 
-// Remove item
+// Remove from cart
 window.removeFromCart = function(index) {
   cart.splice(index, 1);
   updateCart();
