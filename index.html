@@ -18,7 +18,12 @@
   <header>
     <h1>🌿 Organic Vegetables Delivery</h1>
     <p>Fresh • Organic • Indore</p>
+
+    <!-- Cart Button -->
     <button id="cartBtn">🛒 Cart (<span id="cartCount">0</span>)</button>
+
+    <!-- Install App Button (hidden by default) -->
+    <button id="installBtn" style="display:none;">📲 Install App</button>
   </header>
 
   <main>
@@ -65,6 +70,26 @@
         .then(() => console.log("✅ Service Worker Registered"))
         .catch(err => console.log("❌ SW Registration Failed:", err));
     }
+
+    // Install App Button Logic
+    let deferredPrompt;
+    const installBtn = document.getElementById("installBtn");
+
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = "inline-block"; // Show button
+    });
+
+    installBtn.addEventListener("click", async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log("User choice:", outcome);
+        deferredPrompt = null;
+        installBtn.style.display = "none"; // Hide after install
+      }
+    });
   </script>
 </body>
 </html>
