@@ -1,47 +1,67 @@
-const CACHE_NAME = "organic-store-v2"; // version badhao jab bhi update karo
+const CACHE_NAME = "organic-store-v3"; // Increment version on update
 const urlsToCache = [
   "/",
   "/index.html",
   "/style.css",
   "/app.js",
   "/manifest.json",
+  "https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap",
   "https://img.icons8.com/color/96/vegetarian-food.png",
-  "https://img.icons8.com/color/512/vegetarian-food.png"
+  "https://img.icons8.com/color/512/vegetarian-food.png",
+  "/hero-bg.jpg"
 ];
 
-// Install
-self.addEventListener("install", (e) => {
+// Install - cache all necessary files
+self.addEventListener("install", (event) => {
   console.log("Service Worker: Installing...");
-  e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log("Service Worker: Caching files");
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      console.log("Service Worker: Caching Files");
       return cache.addAll(urlsToCache);
     })
   );
+  self.skipWaiting();
 });
 
-// Activate
-self.addEventListener("activate", (e) => {
+// Activate - delete old caches
+self.addEventListener("activate", (event) => {
   console.log("Service Worker: Activating...");
-  e.waitUntil(
-    caches.keys().then((cacheNames) => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
       return Promise.all(
-        cacheNames.map((name) => {
-          if (name !== CACHE_NAME) {
-            console.log("Service Worker: Deleting old cache:", name);
+        cacheNames.map(name => {
+          if(name !== CACHE_NAME) {
+            console.log("Service Worker: Removing old cache", name);
             return caches.delete(name);
           }
         })
       );
     })
   );
+  self.clients.claim();
 });
 
-// Fetch
-self.addEventListener("fetch", (e) => {
-  e.respondWith(
-    caches.match(e.request).then((response) => {
-      return response || fetch(e.request);
+// Fetch - serve cached files if offline
+self.addEventListener("fetch", (event) => {
+  event.respondWith(
+    caches.match(event.request).then(cached => {
+      if(cached) {
+        return cached;
+      }
+      return fetch(event.request)
+        .then(response => {
+          // Cache new requests dynamically
+          return caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, response.clone());
+            return response;
+          });
+        })
+        .catch(() => {
+          // Optional: fallback page/image
+          if(event.request.destination === "image") {
+            return caches.match("/hero-bg.jpg");
+          }
+        });
     })
   );
 });
