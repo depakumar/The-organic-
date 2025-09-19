@@ -11,35 +11,43 @@
   <header>
     <h1>🌿 Organic Vegetables Delivery</h1>
     <p>Fresh • Organic • Indore</p>
+    <button id="cartBtn">🛒 Cart (<span id="cartCount">0</span>)</button>
   </header>
 
   <main>
+    <!-- Products will be inserted dynamically from JS -->
     <section id="products">
       <h2>Our Organic Products</h2>
-      <ul>
-        <li>🥕 Carrots</li>
-        <li>🍅 Tomatoes</li>
-        <li>🥒 Cucumbers</li>
-        <li>🥬 Spinach</li>
-        <li>🍎 Apples</li>
-      </ul>
-    </section>
-
-    <section id="order">
-      <h2>Place Your Order</h2>
-      <form id="orderForm">
-        <input type="text" id="name" placeholder="Full Name" required />
-        <input type="tel" id="phone" placeholder="Mobile Number" required />
-        <textarea id="address" placeholder="Delivery Address" required></textarea>
-        <input type="text" id="items" placeholder="Items (e.g. 2kg Tomatoes)" required />
-        <button type="submit">Submit Order</button>
-      </form>
-      <p id="msg"></p>
+      <div id="productList" class="grid"></div>
     </section>
   </main>
 
-  <!-- Old SDK scripts hatao -->
-  <!-- Sirf module script use karo: -->
+  <!-- Cart Modal -->
+  <div id="cartModal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Your Cart</h2>
+      <ul id="cartItems"></ul>
+      <p><strong>Total:</strong> ₹<span id="cartTotal">0</span></p>
+      <button id="checkoutBtn">Checkout</button>
+      <button id="closeCart">Close</button>
+    </div>
+  </div>
+
+  <!-- Checkout Form -->
+  <div id="checkoutModal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Checkout</h2>
+      <form id="checkoutForm">
+        <input type="text" id="name" placeholder="Full Name" required />
+        <input type="tel" id="phone" placeholder="Mobile Number" required />
+        <textarea id="address" placeholder="Delivery Address" required></textarea>
+        <button type="submit">Place Order</button>
+      </form>
+      <p id="msg"></p>
+      <button id="closeCheckout">Close</button>
+    </div>
+  </div>
+
   <script type="module" src="app.js"></script>
 </body>
 </html>
