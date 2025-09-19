@@ -17,34 +17,141 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-document.getElementById("orderForm").addEventListener("submit", async (e) => {
+// =========================
+// PRODUCT LIST (+20% price)
+// =========================
+const products = [
+  { name: "Fresh Sweet Matar", price: 200 },
+  { name: "Sweet Potato", price: 120 },
+  { name: "Suran", price: 150 },
+  { name: "Fresh Iceberg Lettuce", price: 250 },
+  { name: "Fresh Raw Banana", price: 60 },
+  { name: "Banana Flower (Sunday Only)", price: 100 },
+  { name: "Zucchini / Red Cabbage", price: 250 },
+  { name: "Fresh Basil", price: 50 },
+  // ... (add the rest here)
+];
+
+// Add 20% to each price
+products.forEach(p => p.price = Math.round(p.price * 1.2));
+
+// =========================
+// CART LOGIC
+// =========================
+let cart = [];
+
+const productListEl = document.getElementById("productList");
+const cartBtn = document.getElementById("cartBtn");
+const cartCountEl = document.getElementById("cartCount");
+const cartModal = document.getElementById("cartModal");
+const cartItemsEl = document.getElementById("cartItems");
+const cartTotalEl = document.getElementById("cartTotal");
+const checkoutBtn = document.getElementById("checkoutBtn");
+const checkoutModal = document.getElementById("checkoutModal");
+const checkoutForm = document.getElementById("checkoutForm");
+const msgEl = document.getElementById("msg");
+
+// Render products
+function renderProducts() {
+  productListEl.innerHTML = "";
+  products.forEach((p, index) => {
+    const card = document.createElement("div");
+    card.className = "product-card";
+    card.innerHTML = `
+      <h3>${p.name}</h3>
+      <p>₹${p.price}/kg</p>
+      <button onclick="addToCart(${index})">Add to Cart</button>
+    `;
+    productListEl.appendChild(card);
+  });
+}
+
+// Add to cart
+window.addToCart = function(index) {
+  const product = products[index];
+  const existing = cart.find(item => item.name === product.name);
+  if (existing) {
+    existing.qty++;
+  } else {
+    cart.push({ ...product, qty: 1 });
+  }
+  updateCart();
+};
+
+// Update cart display
+function updateCart() {
+  cartCountEl.textContent = cart.reduce((sum, i) => sum + i.qty, 0);
+  cartItemsEl.innerHTML = "";
+  let total = 0;
+
+  cart.forEach((item, i) => {
+    total += item.price * item.qty;
+    const li = document.createElement("li");
+    li.innerHTML = `
+      ${item.name} - ₹${item.price} × ${item.qty}
+      <button onclick="removeFromCart(${i})">❌</button>
+    `;
+    cartItemsEl.appendChild(li);
+  });
+
+  cartTotalEl.textContent = total;
+}
+
+// Remove item
+window.removeFromCart = function(index) {
+  cart.splice(index, 1);
+  updateCart();
+};
+
+// =========================
+// CHECKOUT & FIREBASE SAVE
+// =========================
+checkoutBtn.addEventListener("click", () => {
+  cartModal.classList.add("hidden");
+  checkoutModal.classList.remove("hidden");
+});
+
+checkoutForm.addEventListener("submit", async (e) => {
   e.preventDefault();
+
+  if (cart.length === 0) {
+    msgEl.innerText = "❌ Cart is empty!";
+    msgEl.style.color = "red";
+    return;
+  }
 
   const name = document.getElementById("name").value.trim();
   const phone = document.getElementById("phone").value.trim();
   const address = document.getElementById("address").value.trim();
-  const items = document.getElementById("items").value.trim();
-  const msgEl = document.getElementById("msg");
-
-  if (!name || !phone || !address || !items) {
-    msgEl.innerText = "Please fill all fields";
-    return;
-  }
 
   try {
     await addDoc(collection(db, "Orders"), {
       name,
       phone,
       address,
-      items,
+      items: cart,
+      total: cart.reduce((sum, i) => sum + i.price * i.qty, 0),
       createdAt: serverTimestamp()
     });
+
     msgEl.innerText = "✅ Order Placed Successfully!";
     msgEl.style.color = "green";
-    document.getElementById("orderForm").reset();
+    checkoutForm.reset();
+    cart = [];
+    updateCart();
   } catch (error) {
     console.error("Error placing order:", error);
-    msgEl.innerText = "❌ Error placing order. Check console.";
+    msgEl.innerText = "❌ Error placing order.";
     msgEl.style.color = "red";
   }
 });
+
+// =========================
+// MODALS
+// =========================
+cartBtn.addEventListener("click", () => cartModal.classList.remove("hidden"));
+document.getElementById("closeCart").addEventListener("click", () => cartModal.classList.add("hidden"));
+document.getElementById("closeCheckout").addEventListener("click", () => checkoutModal.classList.add("hidden"));
+
+// Init
+renderProducts();
